@@ -12,11 +12,11 @@ steps:
         build-essential libfreetype6-dev libexpat1-dev
         libxcb-composite0-dev libssl-dev
       - cargo build --release
-      - mkdir -p build/amethyst-drone-config
-      - mv target/release/amethyst-drone-config build/amethyst-drone-config
-      - cp -R resources build/amethyst-drone-config
+      - mkdir -p build/??CRATE_NAME??
+      - mv target/release/??CRATE_NAME?? build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
       - cd build/
-      - tar -czf amethyst-drone-config-linux-x86_64.tgz amethyst-drone-config
+      - tar -czf ??CRATE_NAME??-linux-x86_64.tgz ??CRATE_NAME??
 
   # Publish release to GitHub releases
   - name: publish-release
@@ -27,7 +27,7 @@ steps:
       api_key:
         from_secret: github_access_key
       files:
-        - build/amethyst-drone-config-linux-x86_64.tgz
+        - build/??CRATE_NAME??-linux-x86_64.tgz
     when:
       ref:
         - refs/tags/v*
@@ -58,11 +58,11 @@ steps:
         echo '[target.x86_64-pc-windows-gnu]
         linker = "x86_64-w64-mingw32-gcc"' >> .cargo/config
       - cargo build --target x86_64-pc-windows-gnu --release
-      - mkdir -p build/amethyst-drone-config
-      - mv target/x86_64-pc-windows-gnu/release/amethyst-drone-config.exe build/amethyst-drone-config
-      - cp -R resources build/amethyst-drone-config
+      - mkdir -p build/??CRATE_NAME??
+      - mv target/x86_64-pc-windows-gnu/release/??CRATE_NAME??.exe build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
       - cd build/
-      - zip -r amethyst-drone-config-windows-x86_64.zip amethyst-drone-config
+      - zip -r ??CRATE_NAME??-windows-x86_64.zip ??CRATE_NAME??
 
   # Publish release to GitHub releases
   - name: publish-release
@@ -73,7 +73,7 @@ steps:
       api_key:
         from_secret: github_access_key
       files:
-        - build/amethyst-drone-config-windows-x86_64.zip
+        - build/??CRATE_NAME??-windows-x86_64.zip
     when:
       ref:
         - refs/tags/v*
@@ -122,11 +122,11 @@ steps:
         -I/build/osxcross/target/SDK/MacOSX10.11.sdk/usr/include'
       - export CC=x86_64-apple-darwin15-clang
       - cargo build --target x86_64-apple-darwin --release
-      - mkdir -p build/amethyst-drone-config
-      - mv target/x86_64-apple-darwin/release/amethyst-drone-config build/amethyst-drone-config
-      - cp -R resources build/amethyst-drone-config
+      - mkdir -p build/??CRATE_NAME??
+      - mv target/x86_64-apple-darwin/release/??CRATE_NAME?? build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
       - cd build/
-      - tar -czf amethyst-drone-config-mac-x86_64.tgz amethyst-drone-config
+      - tar -czf ??CRATE_NAME??-mac-x86_64.tgz ??CRATE_NAME??
 
   # Publish release to GitHub releases
   - name: publish-release
@@ -137,7 +137,7 @@ steps:
       api_key:
         from_secret: github_access_key
       files:
-        - build/amethyst-drone-config-mac-x86_64.tgz
+        - build/??CRATE_NAME??-mac-x86_64.tgz
     when:
       ref:
         - refs/tags/v*
