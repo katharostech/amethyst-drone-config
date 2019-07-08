@@ -34,3 +34,5 @@ At the bottom of the Drone settings page you can copy a link to create a nice bu
 ## Example
 
 This repo contains the default Amethyst game example and demonstrates successfully using this Drone config. You can see what a release looks like from the [releases](https://github.com/zicklag/amethyst-drone-config/releases) page.
+
+If you have any questions, open an issue!
