@@ -1,0 +1,147 @@
+---
+kind: pipeline
+name: linux
+
+steps:
+  - name: build
+    image: rust:1.35
+    commands:
+      - apt-get update
+      - >
+        apt-get install -y gcc pkg-config openssl libasound2-dev cmake
+        build-essential libfreetype6-dev libexpat1-dev
+        libxcb-composite0-dev libssl-dev
+      - cargo build --release
+      - mkdir build/??CRATE_NAME??
+      - mv target/release/??CRATE_NAME?? build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
+      - cd build/
+      - tar -czf ??CRATE_NAME??-linux-x86_64.tgz 
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - build/??CRATE_NAME??-linux-x86_64.tgz
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
+
+---
+kind: pipeline
+name: windows
+
+steps:
+
+  # Build Arsenal runtime for Windows
+  - name: build
+    image: rust:1.35
+    commands:
+      - apt-get update
+      - >
+        apt-get install -y gcc gcc-mingw-w64 pkg-config openssl libasound2-dev
+        cmake build-essential libfreetype6-dev libexpat1-dev
+        libxcb-composite0-dev libssl-dev zip
+      - rustup target install x86_64-pc-windows-gnu
+      - mkdir -p .cargo
+      - |
+        echo '[target.x86_64-pc-windows-gnu]
+        linker = "x86_64-w64-mingw32-gcc"' >> .cargo/config
+      - cargo build --target x86_64-pc-windows-gnu --release
+      - mkdir build/??CRATE_NAME??
+      - mv target/x86_64-pc-windows-gnu/release/??CRATE_NAME??.exe build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
+      - cd build/
+      - zip -r ??CRATE_NAME??-windows-x86_64.zip ??CRATE_NAME??
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - build/??CRATE_NAME??-windows-x86_64.zip
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
+
+---
+kind: pipeline
+name: macos
+
+steps:
+
+  - name: build
+    image: rust:1.35
+    commands:
+      # Install Cross-compiler toolchain
+      - apt-get update
+      - apt-get install -y clang cmake cpio make libssl-dev lzma-dev libxml2-dev
+      - rustup target add x86_64-apple-darwin
+      - mkdir -p /build
+      - cd /build
+      - git clone --depth 1 https://github.com/tpoechtrager/osxcross.git
+      - cd /build/osxcross/tarballs
+      - wget https://s3.dockerproject.org/darwin/v2/MacOSX10.11.sdk.tar.xz
+      - cd /build/osxcross
+      - UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
+      - export PATH="$PATH:/build/osxcross/target/bin"
+      - ln -s /build/osxcross/target/SDK/MacOSX10.11.sdk/System/ /System
+      # Configure build to use Mac linker and libraries
+      - mkdir -p /drone/src/.cargo
+      - |
+        echo '[target.x86_64-apple-darwin]
+        linker = "x86_64-apple-darwin15-clang"' >> /drone/src/.cargo/config
+      - cd /drone/src
+      - echo "[replace]" >> Cargo.toml # Patch coreaudio-sys so that it can be cross-compiled on Linux
+      - >
+        echo '"coreaudio-sys:0.2.2" = 
+        { git = "https://github.com/zicklag/coreaudio-sys.git",
+        branch = "feature/support-linux-cross-compiling" }' >> Cargo.toml
+      - export COREAUDIO_FRAMEWORKS_PATH='/System/Library/Frameworks'
+      - >
+        export COREAUDIO_CFLAGS='-I/System/Library/Frameworks/Kernel.framework/Headers
+        -I/build/osxcross/target/SDK/MacOSX10.11.sdk/usr/include'
+      - cargo build --target x86_64-apple-darwin --release
+      - mkdir build/??CRATE_NAME??
+      - mv target/release/??CRATE_NAME?? build/??CRATE_NAME??
+      - cp -R resources build/??CRATE_NAME??
+      - cd build/
+      - tar -czf ??CRATE_NAME??-mac-x86_64.tgz ??CRATE_NAME??
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - build/??CRATE_NAME??-mac-x86_64.tgz
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
