@@ -1,6 +1,6 @@
 # Amethyst Drone CI Config Template
 
-[![Build Status](https://cloud.drone.io/api/badges/zicklag/amethyst-drone-config/status.svg)](https://cloud.drone.io/zicklag/amethyst-drone-config)
+[![Build Status](https://cloud.drone.io/api/badges/katharostech/amethyst-drone-config/status.svg)](https://cloud.drone.io/katharostech/amethyst-drone-config)
 
 This is a starter template for the [Drone CI](https://drone.io) server that can be used to automatically build [Amethyst](https://github.com/amethyst/amethyst) games for 64bit Windows, Mac, and Linux *and* automatically deploy the builds to your GitHub releases.
 
@@ -29,7 +29,7 @@ This will create a new 1.0.2 release on GitHub that Drone will add your Windows,
 
 ### Build Badge
 
-At the bottom of the Drone settings page you can copy a link to create a nice build status badge for your repo: [![Build Status](https://cloud.drone.io/api/badges/zicklag/amethyst-drone-config/status.svg)](https://cloud.drone.io/zicklag/amethyst-drone-config).
+At the bottom of the Drone settings page you can copy a link to create a nice build status badge for your repo: [![Build Status](https://cloud.drone.io/api/badges/katharostech/amethyst-drone-config/status.svg)](https://cloud.drone.io/katharostech/amethyst-drone-config).
 
 ## Example
 
