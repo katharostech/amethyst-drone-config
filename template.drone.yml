@@ -114,8 +114,8 @@ steps:
       - echo "[replace]" >> Cargo.toml # Patch coreaudio-sys so that it can be cross-compiled on Linux
       - >
         echo '"coreaudio-sys:0.2.2" = 
-        { git = "https://github.com/zicklag/coreaudio-sys.git",
-        branch = "feature/support-linux-cross-compiling" }' >> Cargo.toml
+        { git = "https://github.com/RustAudio/coreaudio-sys.git",
+        rev = "13a32d7" }' >> Cargo.toml
       - cargo update
       - export COREAUDIO_FRAMEWORKS_PATH='/System/Library/Frameworks'
       - >
